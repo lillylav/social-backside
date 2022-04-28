@@ -9,11 +9,14 @@ const ReactionSchema = new Schema(
             type: Schema.Types.ObjectId,
             default: () => new Types.ObjectId()
         },
-        reactionBody: {
-            type: String
-        },
         username: {
-            type: String
+            type: String,
+            required: true
+        },
+        reactionBody: {
+            type: String,
+            required: true,
+            max: 280
         },
         createdAt: {
             type: Date,
@@ -32,10 +35,13 @@ const ReactionSchema = new Schema(
 
 const ThoughtSchema = new Schema({
         username: {
-            type: String
+            type: String,
+            required: true
         },
         thoughtBody: {
-            type: String
+            type: String,
+            required: true,
+            max: 280
         },
         createdAt: {
             type: Date,

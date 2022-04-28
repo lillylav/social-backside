@@ -13,17 +13,17 @@ const thoughtController = {
     },
     // get a single thought by ID
     getThoughtById({ params }, res) {
-        Thought.findOne({ _id: params.id })
-                .then(dbThoughtsData => {
-                // If no thoughts is found, send 404
-                if (!dbThoughtsData) {
-                res.status(404).json({ message: 'No thoughts found with this id!' });
-                return;
+        Thought.findOne({ _id: params.thoughtId })
+            .select('-__v')
+            .then((dbThoughtData) => {
+                if (!dbThoughtData) {
+                return res.status(404).json({ message: 'No thought with this id!' });
                 }
-                res.json(dbPizzaData);
-            }).catch(err => {
+                res.json(dbThoughtData);
+            })
+            .catch((err) => {
                 console.log(err);
-                res.status(400).json(err);
+                res.status(500).json(err);
             });
     },
     // create a new thought
@@ -45,7 +45,7 @@ const thoughtController = {
     },
     // update a thought by ID
     updateThought({ params, body }, res) {
-        Thought.findOneAndUpdate({ _id: params.id }, body, { new: true })
+        Thought.findOneAndUpdate({ _id: params.thoughtId }, body, { new: true })
             .then(dbThoughtData => {
                 if (!dbThoughtData) {
                 res.status(404).json({ message: 'No thought found with this id!' });
@@ -56,7 +56,7 @@ const thoughtController = {
     },
     // delete thought by ID
     deleteThought({ params }, res) {
-        Thought.findOneAndDelete({ _id: params.id })
+        Thought.findOneAndDelete({ _id: params.thoughtId })
             .then(dbThoughtData => {
             if (!dbThoughtData) {
                 res.status(404).json({ message: 'No thought found with this id!' });
@@ -69,11 +69,11 @@ const thoughtController = {
     addReaction({ params, body }, res) {
         Thought.findOneAndUpdate(
             { _id: params.thoughtId },
-            { $push: { reactions: body } },
+            { $push: { reaction: body } },
             { new: true }
         ).then(dbReactionData => {
             if (!dbReactionData) {
-            res.status(404).json({ message: 'No reaction found with this id!' });
+            res.status(404).json({ message: 'No thought found with this id!' });
             return;
             }
             res.json(dbReactionData);
@@ -83,7 +83,7 @@ const thoughtController = {
     removeReaction({ params }, res) {
         Thought.findOneAndUpdate(
             { _id: params.thoughtId },
-            { $pull: { replies: { reactionId: params.reactionId } } },
+            { $pull: { reaction: { reactionId: params.reactionId } } },
             { new: true }
         ).then(dbReactionData => res.json(dbReactionData))
         .catch(err => res.json(err));
